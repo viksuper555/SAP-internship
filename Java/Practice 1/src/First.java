@@ -1,7 +1,7 @@
 
 public class First {
-	public static void main(String[] args) {
-		
+	public static void main(String[] args) {		//Check if all numbers in
+													// an array are negative
 		int arr[] = {-1,-2,-3,-4}, counter = 0;
 		
 		for(int i=0;i<arr.length;i++)

@@ -1,6 +1,6 @@
 public class Third {
-	public static void main(String[] args) {
-		
+	public static void main(String[] args) {		//Check if strng contains
+													// another string and return pos
 		int pos = 0, counter = 0, j=0;
 		char arr[] = {'a','b','c','d'}, ch[] = {'c','e'};
 		

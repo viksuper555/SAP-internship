@@ -1,6 +1,6 @@
 public class Fourth {
 
-	public static void main(String[] args)
+	public static void main(String[] args)		//Simply sort an array
 	{
 		int arr[] = {1,0,1,1,0,1,0}, b;
 		

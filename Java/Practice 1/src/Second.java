@@ -1,5 +1,5 @@
 public class Second {
-	public static void main(String[] args) {
+	public static void main(String[] args) {		//Check if an array is Jagged
 		int arr[] = {1,2,3,4}, counter = 0;
 		
 		for(int i = 1; i < arr.length-1;i++)
