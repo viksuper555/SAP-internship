@@ -1,0 +1,23 @@
+public class Third {
+	public static void main(String[] args) {
+		
+		int pos = 0, counter = 0, j=0;
+		char arr[] = {'a','b','c'}, ch[] = {'c'};
+		
+		for(int i=0; i<=arr.length - ch.length;i++)
+		{
+			if(arr[i] == ch[0] && arr.length >= i + ch.length) //If enough chars in arr
+				
+				for(j = i; j < i + ch.length; j++)
+				{
+					if(arr[j] == ch[j])
+						counter++;
+				}
+			
+			if(counter == i + ch.length - j) //Check if all chars were equal
+				pos = i;
+			counter = 0;
+		}
+		System.out.print(pos);
+	}
+}

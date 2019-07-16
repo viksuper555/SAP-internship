@@ -1,0 +1,15 @@
+public class Third {
+	public static void main(String[] args) {
+		
+		char arr[] = {}, ch[] = {};
+		
+		for(int i=0; i<arr.length - ch.length;i++)
+		{
+			if(arr[i] == ch[i] && arr.length <= i + ch.length) //If enough chars in arr
+				for(int j = i;j<i+ch.length;j++)
+				{
+					
+				}
+		}	
+	}
+}
