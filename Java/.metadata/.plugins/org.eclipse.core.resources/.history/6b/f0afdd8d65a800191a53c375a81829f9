@@ -1,0 +1,17 @@
+
+public class Eighth {
+	public static void main(String args[])
+	{
+		boolean arr[][] = {{true,true,false,true}, {true,false,false,true}, {true,true,false,true}};
+		
+		
+	}
+	
+	public static boolean CheckArray(int arr[][])
+	{
+		int len = Math.min(arr.length, arr[0].length);
+		
+		
+		return false;
+	}
+}

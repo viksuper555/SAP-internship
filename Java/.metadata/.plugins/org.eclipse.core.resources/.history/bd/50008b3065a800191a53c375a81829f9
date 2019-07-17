@@ -1,0 +1,7 @@
+
+public class Eighth {
+	public static void main(String args[])
+	{
+		boolean arr[][] = {{true,true,false,true}, {true,false,false,true}, {true,true,false,true}};
+	}
+}

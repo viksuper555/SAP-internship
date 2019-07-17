@@ -1,0 +1,7 @@
+
+public class TaskTen {		//Find the most frequent element in an array
+	public static void Main(String args[])
+	{
+		
+	}
+}
