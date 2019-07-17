@@ -30,6 +30,5 @@ public class TaskEleven {			//Create a matrix from user input
 			}
 			System.out.println();
 		}
-		scanner.close();
 	}
 }
