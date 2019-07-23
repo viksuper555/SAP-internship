@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -10,7 +11,7 @@ public class Startup {
 	private static int row[] = {-1, 0, 0, 1};
 	private static int col[] = {0, -1, 1, 0};
 	
-	public static void main(String args[])
+	public static void main(String args[]) throws IOException, InterruptedException
 	{
 		String maze[][] = 	   {{"#", "#", "#", "#", "#", "#", "#", "#", "#", "#"},
 								{"#", ".", ".", ".", ".", ".", ".", "&", ".", "#"},
@@ -38,26 +39,30 @@ public class Startup {
 		}
 		
 		Collections.reverse(coordinates);
-		
-		/*
-		System.out.println(distance);
-		
-		for(var coord : coordinates)
-			System.out.printf("x: %d y: %d \n",coord.x, coord.y);
-		*/
+				
 		Scanner scanner = new Scanner(System.in);
+		Coordinate previousCoord = rocket.trace.coordinates;
+
 		for(var coord : coordinates)	
 		{
-
 			PrintMatrix(maze);
 			scanner.nextLine();
-			maze[coord.x][coord.y] = "@";	
-			System.out.println("\n\n\n\n\n\n");
-			
+			maze[previousCoord.x][previousCoord.y] = ".";
+			if(maze[coord.x][coord.y] == "&")
+				maze[coord.x][coord.y] = "@";
+			else
+				maze[coord.x][coord.y] = "~";
+		    new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+			PrintMatrix(maze);
+		    new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+			previousCoord = coord;		
 		}
 		PrintMatrix(maze);
 		scanner.close();
-		
+		if(distance != 0)
+			System.out.printf("\n Distance traveled: %d", distance);
+		else
+			System.out.println("\n Cannot reach robot!");
 	}
 	
 	public static Rocket search(String[][] maze, Rocket parent)
@@ -130,6 +135,8 @@ public class Startup {
 		}
 		
 		Rocket rocket = new Rocket(i,j,0);
+		rocket.trace.coordinates = new Coordinate(i,j);
 		return rocket;
 	}
 }
+
