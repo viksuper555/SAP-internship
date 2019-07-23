@@ -3,6 +3,8 @@ public class Coordinate {
 
 	public int x,y;
 	
+	Coordinate parent = null;
+	
 	public Coordinate(int x, int y)
 	{
 		this.x = x;

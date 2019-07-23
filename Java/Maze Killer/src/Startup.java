@@ -1,6 +1,9 @@
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
+import java.util.Scanner;
 
 public class Startup {
 
@@ -22,15 +25,38 @@ public class Startup {
 		
 		Rocket rocket = findRocket(maze);
 		
-		System.out.println(search(maze, rocket).trace.distance);
-		int i = 0;
-		for(var coordinate : search(maze, rocket).trace.coordinates)
+		var distance = search(maze, rocket).trace.distance;
+		
+		
+		
+		Coordinate coordinate = search(maze, rocket).trace.coordinates;
+		List<Coordinate> coordinates = new ArrayList<Coordinate>(); 
+		for(int i = 0; i < distance; i++)
 		{
-			
-			System.out.printf("%d x: %d y: %d \n",i,coordinate.x, coordinate.y);
-			i++;
+			coordinates.add(coordinate);
+			coordinate = coordinate.parent;
+		}
+		
+		Collections.reverse(coordinates);
+		
+		/*
+		System.out.println(distance);
+		
+		for(var coord : coordinates)
+			System.out.printf("x: %d y: %d \n",coord.x, coord.y);
+		*/
+		Scanner scanner = new Scanner(System.in);
+		for(var coord : coordinates)	
+		{
+
+			PrintMatrix(maze);
+			scanner.nextLine();
+			maze[coord.x][coord.y] = "@";	
+			System.out.println("\n\n\n\n\n\n");
 			
 		}
+		PrintMatrix(maze);
+		scanner.close();
 		
 	}
 	
@@ -49,10 +75,6 @@ public class Startup {
 						
 			Rocket current = queue.poll();
 			if (maze[current.posX][current.posY] == "&") {
-				for(var rocket : queue)
-				{
-					current.trace.coordinates.add(new Coordinate(rocket.posX,rocket.posY));
-				}
 				return current;
 			}
 			
@@ -62,7 +84,11 @@ public class Startup {
 				if(isValid(maze, visited, current.posX + row[i], current.posY + col[i]))
 				{
 					visited[current.posX + row[i]][current.posY + col[i]] = true;
-					queue.add(new Rocket(current.posX + row[i], current.posY + col[i], current.trace.distance + 1));
+					Rocket rocket = new Rocket(current.posX + row[i], current.posY + col[i], current.trace.distance + 1);
+					rocket.trace.coordinates = new Coordinate(current.posX + row[i], current.posY + col[i]);
+					if(current.trace.coordinates != null)
+						rocket.trace.coordinates.parent = current.trace.coordinates;
+					queue.add(rocket);
 				}
 			}
 			
@@ -70,54 +96,13 @@ public class Startup {
 		
 		return parent;
 	}
-	
-	
+		
 	public static boolean isValid(String maze[][], boolean visited[][], int x, int y)
 	{
 		return (x >= 0) && (x < maze.length) && (y >= 0) && (y < maze[0].length)
 				&& maze[x][y] == "." &&  !visited[x][y] || maze[x][y] == "&";
 	}
 	
-	/*public static ArrayList<Rocket> getAdjacent(String[][] maze, Rocket current) {
-		
-		ArrayList<Rocket> adjacent = new ArrayList<Rocket>();
-		
-		int posX = current.posX;
-		int posY = current.posY;
-		int dist = current.distance;
-		
-		//North
-		if(posY > 0 && maze[posX][posY-1] != "#")
-		{
-			
-			adjacent.add(new Rocket(posX, posY - 1,dist + 1));
-		}
-		
-		//South
-		if(posY < maze.length -1 && maze[posX][posY+1] != "#")
-		{
-			
-			adjacent.add(new Rocket(posX, posY + 1,dist + 1));
-		}
-		
-		//West
-		if(posX > 0 && maze[posX-1][posY] != "#")
-		{
-			
-			adjacent.add(new Rocket(posX - 1, posY,dist + 1));
-		}
-		
-		//East
-		if(posX < maze[0].length -1 && maze[posX+1][posY] != "#")
-		{
-			
-			adjacent.add(new Rocket(posX + 1, posY,dist + 1));
-		}
-		
-		return adjacent;
-	}
-	
-	*/
 	private static void PrintMatrix(String maze[][])
 	{
 		for(int i = 0; i < maze.length; i++)
@@ -129,6 +114,7 @@ public class Startup {
 			System.out.println();
 		}
 	}
+	
 	
 	private static Rocket findRocket(String maze[][])
 	{
