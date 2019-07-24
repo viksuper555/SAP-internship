@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Random;
 import java.util.Scanner;
 
 public class Startup {
@@ -14,55 +15,70 @@ public class Startup {
 	public static void main(String args[]) throws IOException, InterruptedException
 	{
 		String maze[][] = 	   {{"#", "#", "#", "#", "#", "#", "#", "#", "#", "#"},
-								{"#", ".", ".", ".", ".", ".", ".", "&", ".", "#"},
+								{"#", ".", ".", ".", ".", ".", ".", ".", ".", "#"},
 								{"#", ".", "#", ".", "#", "#", "#", "#", ".", "#"},
-								{"#", ".", ".", "#", ".", "#", ".", "#", ".", "#"},
+								{"#", ".", ".", "#", ".", "#", ".", "#", "&", "#"},
 								{"#", ".", ".", ".", ".", ".", ".", "#", "#", "#"},
 								{"#", ".", "#", "#", "#", "#", ".", "#", ".", "#"},
 								{"#", ".", "#", ".", ".", ".", ".", "#", ".", "#"},
 							 	{"#", "#", "#", "#", "#", ".", "#", "#", ".", "#"},
-							 	{"#", ".", "~", ".", ".", ".", ".", ".", ".", "#"},
+							 	{"#", "~", ".", ".", ".", ".", ".", ".", ".", "#"},
 							 	{"#", "#", "#", "#", "#", "#", "#", "#", "#", "#"}};
 		
 		Rocket rocket = findRocket(maze);
-		
 		var distance = search(maze, rocket).trace.distance;
-		
-		
-		
-		Coordinate coordinate = search(maze, rocket).trace.coordinates;
-		List<Coordinate> coordinates = new ArrayList<Coordinate>(); 
-		for(int i = 0; i < distance; i++)
-		{
-			coordinates.add(coordinate);
-			coordinate = coordinate.parent;
-		}
-		
-		Collections.reverse(coordinates);
-				
+		int distanceTraveled = 0;
 		Scanner scanner = new Scanner(System.in);
-		Coordinate previousCoord = rocket.trace.coordinates;
-
-		for(var coord : coordinates)	
-		{
-			PrintMatrix(maze);
-			scanner.nextLine();
-			maze[previousCoord.x][previousCoord.y] = ".";
-			if(maze[coord.x][coord.y] == "&")
-				maze[coord.x][coord.y] = "@";
-			else
-				maze[coord.x][coord.y] = "~";
-		    new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
-			PrintMatrix(maze);
-		    new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
-			previousCoord = coord;		
-		}
+		new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
 		PrintMatrix(maze);
-		scanner.close();
 		if(distance != 0)
-			System.out.printf("\n Distance traveled: %d", distance);
+		{
+			
+			while(findCharCoordinates(maze, "@") == null)
+			{
+				
+				rocket = findRocket(maze);
+				List<Coordinate> coordinates = GetCoordinatesTrace(maze);
+				
+				
+				Coordinate previousCoord = rocket.trace.coordinates;
+				Coordinate previousBotCoord = findCharCoordinates(maze, "&");			
+				scanner.nextLine();
+				for(int i = 0; i < 2; i ++)
+				{
+					Coordinate nextHop = coordinates.get(i);
+					
+					maze[previousCoord.x][previousCoord.y] = ".";
+					if(maze[nextHop.x][nextHop.y] == "&")
+					{
+						maze[nextHop.x][nextHop.y] = "@";
+						break;
+					}
+					else
+						maze[nextHop.x][nextHop.y] = "~";
+					
+					distanceTraveled++;
+					previousCoord = nextHop;
+				}
+				if(findCharCoordinates(maze, "@") == null && botRandomMove(maze) != null)
+				{
+					Coordinate botNextHop = botRandomMove(maze);
+					maze[previousBotCoord.x][previousBotCoord.y] = ".";
+					maze[botNextHop.x][botNextHop.y] = "&";
+				}
+
+				   new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+				PrintMatrix(maze);
+				
+			}
+		}
 		else
 			System.out.println("\n Cannot reach robot!");
+		
+		System.out.printf("\nDistance traveled: %d", distanceTraveled);
+
+		scanner.close();
+		
 	}
 	
 	public static Rocket search(String[][] maze, Rocket parent)
@@ -120,23 +136,69 @@ public class Startup {
 		}
 	}
 	
-	
 	private static Rocket findRocket(String maze[][])
 	{
+		Coordinate coord = findCharCoordinates(maze, "~");
+		
+		Rocket rocket = new Rocket(coord.x,coord.y,0);
+		rocket.trace.coordinates = coord;
+		return rocket;
+	}
+	
+	private static Coordinate findCharCoordinates(String maze[][], String chr)
+	{
 		int i,j = 0;
-		outerloop:
+		
 		for(i = 0; i < maze.length-1; i++)
 		{
 			for(j = 0; j < maze[0].length-1; j++)
 			{
-				if(maze[i][j] == "~")
-					break outerloop;
+				if(maze[i][j] == chr)
+					return new Coordinate(i,j);
 			}
 		}
 		
-		Rocket rocket = new Rocket(i,j,0);
-		rocket.trace.coordinates = new Coordinate(i,j);
-		return rocket;
+		return null;
 	}
+	
+	private static List<Coordinate> GetCoordinatesTrace(String maze[][])
+	{
+		Rocket rocket = findRocket(maze);	
+		var distance = search(maze, rocket).trace.distance;
+		Coordinate coordinate = search(maze, rocket).trace.coordinates;
+		List<Coordinate> coordinates = new ArrayList<Coordinate>(); 
+		for(int i = 0; i < distance; i++)
+		{
+			coordinates.add(coordinate);
+			coordinate = coordinate.parent;
+		}
+		
+		Collections.reverse(coordinates);
+		return coordinates;
+	}
+
+	private static Coordinate botRandomMove(String maze[][])
+	{
+		int posX = findCharCoordinates(maze, "&").x;
+		int posY = findCharCoordinates(maze, "&").y;
+
+		List<Coordinate> validCoordinates = new ArrayList<Coordinate>();
+		
+		for(int i = 0; i < 4; i++)
+		{
+			int x = posX + row[i];
+			int y = posY + col[i];
+			if((x >= 0) && (x < maze.length) && (y >= 0) && (y < maze[0].length)
+					&& maze[x][y] == ".")
+			{
+				validCoordinates.add(new Coordinate(x,y));
+			}
+		}
+		Random rand = new Random();
+		if(validCoordinates.size() <= 0)
+			return null;
+		return validCoordinates.get(rand.nextInt(validCoordinates.size()));
+	}
+
 }
 
